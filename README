@@ -1,0 +1,60 @@
+============== -*- outline -*- ==============
+
+		bioinfo_tools
+
+2021/03/22	Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+=============================================
+
+* 何これ？
+
+	某研究者から bioinformatics 関連のツールを作って欲しいと
+	依頼を受けて作っているやつ
+
+* ライセンス
+
+	GNU General Public License v2
+
+* mo_dfast_to_cdspickup.sh
+
+	https://dfast.ddbj.nig.ac.jp/
+	http://kazumaxneo.hatenablog.com/entry/2019/10/10/073000
+	https://github.com/nigyta/dfast_core
+
+	上記の Dfast は
+		A) RARx-METABAT__x/protein.faa
+		B) RARx-METABAT__x/genome.gbk
+	A) に説明を添えた B) を作成する
+
+	mo_dfast_to_cdspickup は B) の CDS の /note の中に特定のキーワードを含んでいるものを
+	A) からピックアップするために、中間ファイルである mo_cdspickup_xxx.xls を作る
+	(xxx は指定したキーワード)。
+
+	以下は "AmoA" と言うキーワードを全フォルダ (= RAR*) からピックアップする例
+
+		> ls
+		RAR1-METABAT__1  RAR2-METABAT__2  RAR3-METABAT__3 ...
+
+		> mo_dfast_to_cdspickup.sh AmoA RAR*
+
+	上記例の場合、実行後に mo_cdspickup_AmoA.xls と言うファイルができる。
+	確認のためこのファイルを MS Office 等で開き余計なものが含まれていないか等を確認する。
+	余計なものが含まれている場合は、その行を削除する。
+	確認・編集後、「CSV 形式」または「テキスト（タブ）形式」で保存する。
+	保存したファイルを使い、次の mo_cdspickup_to_faa.sh を使用する事で、
+	特定のキーワード含んだ新しい protein.faa を作成する
+
+* mo_cdspickup_to_faa
+
+	mo_dfast_to_cdspickup により作成された mo_cdspickup_xx ファイルを元に
+	新しい protein.faa を作成する
+
+	以下は "AmoA" と言うキーワードを全フォルダ (= RAR*) からピックアップした
+	mo_cdspickup_AmoA.xls （テキスト（タブ）形式）を元に全フォルダ内にある
+	protein.faa からキーワードを含む情報だけをピックアップする。
+
+		> ls
+		RAR1-METABAT__1  RAR2-METABAT__2  RAR3-METABAT__3 ...
+
+		> mo_cdspickup_to_faa.sh mo_cdspickup_AmoA.xls RAR*
+
+	上記の例の実行後、mo_protein.faa が作成される
