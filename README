@@ -14,6 +14,13 @@
 
 	GNU General Public License v2
 
+* MAC ユーザー
+
+	MAC の sed (BSD sed) の改行の扱いが相当ややこしいので
+	MAC ユーザーは GNU sed を使ってください
+
+		> brew install gnu-sed
+
 * mo_dfast_to_cdspickup.sh
 
 	https://dfast.ddbj.nig.ac.jp/

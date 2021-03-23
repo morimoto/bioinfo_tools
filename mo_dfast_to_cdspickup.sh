@@ -30,6 +30,21 @@ TMP=mo_tmp
 OUT=mo_cdspickup_${KEYWORD}.xls
 
 #
+# MAC の sed (BSD sed) では改行の扱いが面倒くさいので
+# GNU sed を使う (あれば)
+#
+SED=sed
+if [ `uname` = "Darwin" ]; then
+	which gsed 2>&1 1>/dev/null
+	if [ $? = 1 ]; then
+		echo "you need to have gnu-sed on Mac, install it"
+		echo "	brew install gnu-sed"
+		exit
+	fi
+	SED=gsed
+fi
+
+#
 # 一時ファイルを初期化
 #
 : > ${TMP}
@@ -54,7 +69,7 @@ do
 	#	CDS xxxxx ABC xxx locus_tag=name /note=xxx /note=yyy
 	# - 上記を一時ファイルに書き出し
 	#
-	perl -pe 's/\n/ /' ${dir}/genome.gbk | sed "s/CDS\s/\nCDS/g" | grep -w ${KEYWORD} | sed "s/  */ /g" >> ${TMP}
+	perl -pe 's/\n/ /' ${dir}/genome.gbk | ${SED} "s/CDS /\nCDS /g" | grep -w ${KEYWORD} | sed "s/  */ /g" >> ${TMP}
 done
 
 #
