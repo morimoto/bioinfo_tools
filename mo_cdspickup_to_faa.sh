@@ -58,7 +58,7 @@ done
 #
 # 結果として元々 locus_tag だったものの一覧だけが残る
 #
-LIST=`sed "s/[\t ,].*//g" ${CDSPICK} | sed "s/\"//g"`
+LIST=`sed "s/[\t ,].*//g" ${CDSPICK} | tr -d \"`
 for list in ${LIST}
 do
 	# 指定された locus_tag を持つ行（とその次のゲノム情報行）
