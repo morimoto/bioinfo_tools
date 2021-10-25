@@ -1,0 +1,80 @@
+#! /bin/sh
+# SPDX-License-Identifier: GPL-2.0
+#===============================
+#
+# mo_get_singleton_faa
+#
+#	xxx.faa から指定された MAG のシングルトンをピックアップする
+#
+#	--- sample.faa ----
+#	...
+#	MGA_6|YTPLAS18_00060    K02469
+#	MGA_7|YTPLAS18_00070    K03664
+#	MGA_8|YTPLAS18_00080
+#	MGA_9|YTPLAS18_00090
+#	...
+#	MGA_3815|YTPLAS72_37530
+#	MGA_3816|YTPLAS72_37540
+#	MGA_3817|YTPLAS72_37550   K07714
+#	MGA_3818|YTPLAS72_37560
+#	MGA_3819|YTPLAS72_37570
+#	...
+#	MGA_1|defluvii_00010      K02313
+#	MGA_2|defluvii_00020      K02338
+#	MGA_3|defluvii_00030      K02470
+#	MGA_4|defluvii_00040      K02469
+#	...
+#	-------------------
+#
+#		> mo_uniq_faa sample.faa YTPLAS18
+#
+# 2021/10/25 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+#===============================
+TMP=/tmp/mo_$$
+
+#
+# 第１パラメータが xxx.faa ファイル
+#
+FILE=$1
+if [ ! -f ${FILE} ]; then
+	echo "no such file"
+	exit 1
+fi
+
+#
+# 第２パラメータが
+#
+HOGE=$2
+if [ x${HOGE} = x ]; then
+	echo "no target"
+	exit 1
+fi
+
+# grep		ターゲット行をピックアップ
+# awk		2 列目 (Kxxxx) だけをピックアップ
+# sort|uniq	並べ替えて重複行を削除
+#
+# id_target	ターゲットの Kxxx
+# id_nottarget	ターゲット以外の Kxxx
+grep    ${HOGE} ${FILE} | awk '{print $2}' | sort | uniq	> ${TMP}_id_target
+grep -v ${HOGE} ${FILE} | awk '{print $2}' | sort | uniq	> ${TMP}_id_target_not
+
+# ターゲットとターゲット以外で重複している Kxxx を見つける
+cat ${TMP}_id_target* | sort | uniq -d				> ${TMP}_id_duplicate
+
+# 最後に実行するスクリプトの頭部分を作成
+echo "grep \\"							> ${TMP}_script
+
+# id_target から id_duplicate を除くとシングルトン
+# 最後に実行するスクリプト用に加工
+cat ${TMP}_id_target ${TMP}_id_duplicate | sort | uniq -u \
+	| sed -e "s/^/ -e /g" | sed -e "s/$/ \\\\/g"		>> ${TMP}_script
+
+# スクリプトの最後
+echo "${FILE}"							>> ${TMP}_script
+
+# スクリプト実行
+chmod +x ${TMP}_script
+${TMP}_script
+
+rm ${TMP}*
