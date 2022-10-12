@@ -66,76 +66,6 @@
 
 	上記の例の実行後、mo_protein.faa が作成される
 
-* mo_uniq_faa
-
-	xxxx.faa フィアルの中からユニークな行をピックアップする
-
-	--- sample.faa ----
-	MGA_3|YTPLAS18_00030    K02470
-	MGA_4|YTPLAS18_00040    K02469
-	MGA_5|YTPLAS18_00050
-	MGA_6|YTPLAS18_00060    K02469
-	MGA_7|YTPLAS18_00070    K03664
-	MGA_8|YTPLAS18_00080
-	MGA_9|YTPLAS18_00090
-	MGA_10|YTPLAS18_00100   K02470
-	-------------------
-
-		> mo_uniq_faa sample.faa
-		MGA_7|YTPLAS18_00070    K03664
-
-* mo_get_singleton_faa
-
-	以下のような xxx.faa から指定された MAG のシングルトンを抽出する
-
-	--- sample.faa ---
-	...
-	MGA_6|YTPLAS18_00060    K02469
-	MGA_7|YTPLAS18_00070    K03664
-	MGA_8|YTPLAS18_00080
-	MGA_9|YTPLAS18_00090
-	...
-	MGA_3815|YTPLAS72_37530
-	MGA_3816|YTPLAS72_37540
-	MGA_3817|YTPLAS72_37550   K07714
-	MGA_3818|YTPLAS72_37560
-	MGA_3819|YTPLAS72_37570
-	...
-	MGA_1|defluvii_00010      K02313
-	MGA_2|defluvii_00020      K02338
-	MGA_3|defluvii_00030      K02470
-	MGA_4|defluvii_00040      K02469
-	...
-	-------------------
-
-		> mo_get_singleton_faa sample.faa YTPLAS18
-
-* mo_get_common_genome_faa
-
-	以下のような xxx.faa から指定された MAG のコアを多い順に表示する
-
-	--- sample.faa ---
-	...
-	MGA_6|YTPLAS18_00060    K02469
-	MGA_7|YTPLAS18_00070    K03664
-	MGA_8|YTPLAS18_00080
-	MGA_9|YTPLAS18_00090
-	...
-	MGA_3815|YTPLAS72_37530
-	MGA_3816|YTPLAS72_37540
-	MGA_3817|YTPLAS72_37550   K07714
-	MGA_3818|YTPLAS72_37560
-	MGA_3819|YTPLAS72_37570
-	...
-	MGA_1|defluvii_00010      K02313
-	MGA_2|defluvii_00020      K02338
-	MGA_3|defluvii_00030      K02470
-	MGA_4|defluvii_00040      K02469
-	...
-	-------------------
-
-		> mo_get_common_genome_faa sample.faa
-
 * mo_merge_orthology_to_faa.pl
 
 	--- sample.txt ---
@@ -184,3 +114,62 @@
 
 	ex)
 		mo_merge_orthology_to_faa.pl sample.txt KO_Orthology_xxx.txt > /tmp/hoge
+
+* mo_analysis.sh
+
+	-------------------
+	MGA_2|NED1_00010
+	MGA_3|NED1_00020	K06925
+	MGA_4|NED1_00030	K00259
+	...
+	MGA_11|NED2_00110
+	MGA_12|NED2_00120	K04065
+	MGA_13|NED2_00130	K01480
+	...
+	MGA_12|NED3_00110	K01284
+	MGA_13|NED3_00120
+	MGA_14|NED3_00130
+	...
+	-------------------
+
+	上記のようなファイルから、Core, Singleton 等の情報を解析する
+
+	> mo_analysis.sh  sample.txt
+
+	summary
+		Total  genes		(a)全遺伝子数（入力ファイルの行数）
+		Genes with K No		(b)全遺伝子に付与された K No の数
+		  rate (genes)		(b) * 100 / (a)
+		Uniq K No		全 K No をユニークにした数
+		Total Core		(x)全コアの数
+		  rate (genes)		(x) * 100 / (a)
+		  rate (K No)		(x) * 100 / (b)
+		Total Singleton		(y)全シングルトンの数
+		  rate (genes)		(y) * 100 / (a)
+		  rate (K No)		(y) * 100 / (b)
+
+	各ゲノムフォルダ
+
+		all_genes.tsv		各ゲノムの全遺伝し数
+		all_k_no.tsv		各ゲノムに付与された K No の数
+		uniq_k.tsv		all_k_no の内容をユニークにしたもの　出現個数付き
+		singleton.tsv		Singleton の Kxxx
+		summary.tsv
+			Total  genes		(1)全ゲノム数 (all_genes.tsv の行数)
+			Genes with K No		(2)Kxxxx の数 (all_k_no.tsv  の行数)
+			  rate (genes)		(2) * 100 / (1)
+			Uniq K No		Kxxx をユニークにした数
+			Singleton		(3)シングルトンの数
+			  rate (genes)		(3) * 100 / (1)
+			  rate (K No)		(3) * 100 / (2)
+
+	core フォルダ
+
+		uniq_core.tsv		全コア　出現個数付き
+		summary.tsv
+			Total  core	(x)全コア数（uniq_core.tsv の行数）
+			SCG (9/9)	(y)9 ゲノム中 9 個がシングルの数
+			  rate (9/9)    (y) * 100 / (x)
+			SCG (8/9)       (z)9 ゲノム中 8 個がシングルの数
+			  rate (8/9)    (z) * 100 / (x)
+			...
