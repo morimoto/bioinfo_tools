@@ -104,7 +104,7 @@ do
 done
 
 : > ${TMP}-scg
-for f in `ls -r -v ${DIR}/core/scg-*`
+for f in `ls -r -v ${DIR}/core/scg-* 2>/dev/null`
 do
 	num=`echo ${f} | sed -e "s|${DIR}/core/scg-||g"`
 
