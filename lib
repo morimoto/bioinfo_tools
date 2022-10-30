@@ -15,3 +15,14 @@ get_kegg() {
 
 	wget 'https://www.genome.jp/kegg-bin/download_htext?htext=ko00001&format=htext&filedir=' -O ${KEGG_FILE}
 }
+
+get_genomes() {
+	GENOME_LIST=`cat $1 | awk '{print $1}' | cut -d "|" -f 2 | cut -d "_" -f 1 | sort | uniq`
+	GENOME_NUM=` cat $1 | awk '{print $1}' | cut -d "|" -f 2 | cut -d "_" -f 1 | sort | uniq | wc -l`
+
+	KNUM_LIST=`grep -w -E "K([0-9]){5}" $1 | awk '{print $2}'`
+	KNUM_NUM=` grep -w -E "K([0-9]){5}" $1 | awk '{print $2}' | wc -l`
+
+	KNUM_UNIQ_LIST=`echo "${KNUM_LIST}" | sort | uniq`
+	KNUM_UNIQ_NUM=` echo "${KNUM_LIST}" | sort | uniq | wc -l`
+}

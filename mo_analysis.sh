@@ -30,6 +30,9 @@
 #
 # 2021/10/25 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 #===============================
+TOP=`readlink -f ./mo_analysis.sh | xargs dirname`
+. ${TOP}/lib
+
 FILE=$1
 if [ ! -f ${FILE} ]; then
 	echo "no such file"
@@ -42,9 +45,9 @@ if [ -e ${DIR} ]; then
 	exit 1
 fi
 
-GLIST=`cat ${FILE} | awk '{print $1}' | cut -d "|" -f 2 | cut -d "_" -f 1 | sort | uniq`
-GN=`   cat ${FILE} | awk '{print $1}' | cut -d "|" -f 2 | cut -d "_" -f 1 | sort | uniq | wc -l`
-for gl in ${GLIST}
+get_genomes ${FILE}
+
+for gl in ${GENOME_LIST}
 do
 	echo "create ${gl}"
 	mkdir -p ${DIR}/${gl}
@@ -68,7 +71,7 @@ TMP=/tmp/mo-analysis-$$
 cat ${DIR}/*/uniq_k.tsv | awk '{print $2}' | sort | uniq -c | sort -V		> ${TMP}-k_nums
 
 cat ${TMP}-k_nums | grep -w "1"							> ${TMP}-k_single
-for gl in ${GLIST}
+for gl in ${GENOME_LIST}
 do
 	cat ${DIR}/${gl}/uniq_k.tsv ${TMP}-k_single | awk '{print $2}' | sort | uniq -d	> ${DIR}/${gl}/singleton.tsv
 
@@ -84,7 +87,7 @@ done
 
 echo "create core"
 mkdir -p ${DIR}/core
-cat ${TMP}-k_nums | grep -w ${GN} | awk '{print $2}'			> ${TMP}-uniq_core
+cat ${TMP}-k_nums | grep -w ${GENOME_NUM} | awk '{print $2}'			> ${TMP}-uniq_core
 
 : > ${TMP}-cores
 for core in `cat ${TMP}-uniq_core`
@@ -112,17 +115,16 @@ do
 
 	scg=`cat ${TMP}-scg | wc -l`
 	spe=`echo "scale=3; ${scg} * 100 / ${CMAX}" | bc`
-	echo "SCG (${num}/${GN})  	${scg}"			>>  ${DIR}/core/summary.tsv
-	echo "  rate (${num}/${GN}) 	${spe}"			>>  ${DIR}/core/summary.tsv
+	echo "SCG (${num}/${GENOME_NUM})  	${scg}"		>>  ${DIR}/core/summary.tsv
+	echo "  rate (${num}/${GENOME_NUM}) 	${spe}"		>>  ${DIR}/core/summary.tsv
 done
 
 echo "create Summary"
 
-grep -w -E "K([0-9]){5}" ${FILE} | awk '{print $2}' > ${TMP}-ks
 gnum=`cat ${FILE} | wc -l`
-knum=`cat ${TMP}-ks | wc -l`
+knum=${KNUM_NUM}
 kper=`echo "scale=3; ${knum} * 100 / ${gnum}" | bc`
-kuiq=`cat ${TMP}-ks | sort | uniq | wc -l`
+kuiq=${KNUM_UNIQ_NUM}
 
 echo "Total  genes       	${gnum}"	>  ${DIR}/summary.tsv
 echo "Genes with K No    	${knum}"	>> ${DIR}/summary.tsv
