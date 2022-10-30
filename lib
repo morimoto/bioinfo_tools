@@ -1,0 +1,17 @@
+#! /bin/bash
+#===============================
+#
+# lib
+#
+# 2022/10/31 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+#===============================
+DATE=`date -I`
+KEGG_FILE_=/tmp/kegg-
+KEGG_FILE=${KEGG_FILE_}${DATE}
+get_kegg() {
+	[ -f ${KEGG_FILE} ] && return
+
+	rm -f ${KEGG_FILE_}*
+
+	wget 'https://www.genome.jp/kegg-bin/download_htext?htext=ko00001&format=htext&filedir=' -O ${KEGG_FILE}
+}
