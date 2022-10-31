@@ -225,3 +225,21 @@
 	09100 Metabolism	09111 Xenobiotics biodegradation and metabolism	00626 Naphthalene degradation [PATH:ko00626]				E1.1.1.1, adh	alcohol dehydrogenase [EC:1.1.1.1]
 	09100 Metabolism	09111 Xenobiotics biodegradation and metabolism	00980 Metabolism of xenobiotics by cytochrome P450 [PATH:ko00980]	E1.1.1.1, adh	alcohol dehydrogenase [EC:1.1.1.1]
 	09100 Metabolism	09111 Xenobiotics biodegradation and metabolism	00982 Drug metabolism - cytochrome P450 [PATH:ko00982]			E1.1.1.1, adh	alcohol dehydrogenase [EC:1.1.1.1]
+
+* mo_genome_function.sh
+
+	指定されたファイルを元に K ナンバーのカテゴリや名前、
+	EC 経路を表記し、各ゲノムがその K ナンバーを持っているかどうかの一覧を作る
+
+	${FILE}_genome_function.tsv と言うファイルに出力する
+	表計算ソフトで開ける
+
+	> mo_genome_function.sh ./user_ko.txt
+	user_ko_genome_function.tsv
+
+	[FIXME]
+
+	KEGG の Web ページは EC 番号をふって無い K ナンバーも
+	EC として認識するけど、KEGG ファイル自体はふって無い
+	このスクリプトはそれを考慮できない
+	時間が経てば解決する問題かも？
