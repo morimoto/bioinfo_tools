@@ -39,7 +39,7 @@ if [ ! -f ${FILE} ]; then
 	exit 1
 fi
 
-DIR=`basename ${FILE} | cut -d "." -f 1`"_result"
+DIR=`basename ${FILE} | cut -d "." -f 1`"_analysis"
 if [ -e ${DIR} ]; then
 	echo "You already have ${DIR}"
 	exit 1
