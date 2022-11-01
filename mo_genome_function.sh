@@ -35,26 +35,35 @@ if [ ! -f ${IFILE} ]; then
 fi
 
 OFILE=`basename ${IFILE} | cut -d "." -f 1`"_genome_function.tsv"
+EFILE=`basename ${IFILE} | cut -d "." -f 1`"_genome_function.xls"
 
 get_genomes ${IFILE}
 
 VER=`tail -n 1 ${KEGG_FILE} | cut -d ":" -f 2`
+
+echo    "<table border=\"1\">" > ${EFILE}
+echo    "<tr><td>KEGG_db_version:${VER}</td></tr>" >> ${EFILE}
+echo -n "<tr><td>Name A</td><td>Name B</td><td>Name C</td><td>Symbol</td><td>Name</td><td>EC</td><td>K num</td>" >> ${EFILE}
 
 echo    "KEGG_db_version:${VER}"				>  ${OFILE}
 echo -n "Name A	Name B	Name C	Symbol	Name	EC	K num"	>> ${OFILE}
 for gl in ${GENOME_LIST}
 do
 	echo -n "	${gl}" >> ${OFILE}
+	echo -n "<td>${gl}</td>" >> ${EFILE}
 	grep ${gl} ${IFILE}	> ${TMP}-${gl}
 done
 
 echo -n "	Sum	Core" >> ${OFILE}
+echo -n "<td>Sum</td><td>Core</td>" >> ${EFILE}
 
 for gl in ${GENOME_LIST}
 do
 	echo -n "	${gl} Singleton" >> ${OFILE}
+	echo -n "<td>${gl} Singleton</td>" >> ${EFILE}
 done
 echo >> ${OFILE}
+echo "</tr>" >> ${EFILE}
 
 d=0
 div=`expr ${KNUM_UNIQ_NUM} / 60 + 1`
@@ -75,20 +84,32 @@ do
 		[ $? = 0 ] && EC=`echo -n "${nlist}" | sed -r "s/.*\[EC:(.*)]/\1/g"`
 		echo -n "${nlist}	${EC}	${knum}"	>> ${OFILE}
 
+		N=`echo "${nlist}" | sed -e "s|	|</td><td>|g"`
+		E=
+		for ec in ${EC}
+		do
+			E="${E}<a href=\"https://www.genome.jp/entry/${ec}\">${ec}</a><br>"
+		done
+
+		echo -n "<tr><td>${N}</td><td>${E}</td><td><a href=\"https://www.genome.jp/dbget-bin/www_bget?ko:${knum}\">${knum}</a></td>"	>> ${EFILE}
+
 		SUM=0
 		for gl in ${GENOME_LIST}
 		do
 			grep -w ${knum} ${TMP}-${gl} > /dev/null
 			if [ $? = 0 ]; then
 				echo -n "	+"	>> ${OFILE}
+				echo -n "<td>+</td>"	>> ${EFILE}
 				SUM=`expr ${SUM} + 1`
 			else
 				echo -n "	-"	>> ${OFILE}
+				echo -n "<td>-</td>"	>> ${EFILE}
 			fi
 		done
 
 		# SUM
 		echo -n "	${SUM}" >> ${OFILE}
+		echo -n "<td>${SUM}</td>" >> ${EFILE}
 
 		# Core
 		O=
@@ -96,6 +117,7 @@ do
 			O="1"
 		fi
 		echo -n "	${O}" >> ${OFILE}
+		echo -n "<td>${O}</td>" >> ${EFILE}
 
 		# Single
 		for gl in ${GENOME_LIST}
@@ -106,11 +128,14 @@ do
 				[ $? = 0 ] && O="1"
 			fi
 			echo -n "	${O}" >> ${OFILE}
+			echo -n "<td>${O}</td>" >> ${EFILE}
 		done
 
 		echo >> ${OFILE}
+		echo "</tr>" >> ${EFILE}
 	done
 done
+echo "</table>" >> ${EFILE}
 echo
 
 rm -fr ${TMP}*

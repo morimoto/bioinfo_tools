@@ -237,6 +237,10 @@
 	> mo_genome_function.sh ./user_ko.txt
 	user_ko_genome_function.tsv
 
+	${FILE}_genome_function.xls と言うファイルも出力するが
+	中身は実は HTML。開く時何か言われるけど無視して開ける。
+	EC や K ナンバーがリンクになっててクリックすると KEGG の Web ページが開ける
+
 	[FIXME]
 
 	KEGG の Web ページは EC 番号をふって無い K ナンバーも
