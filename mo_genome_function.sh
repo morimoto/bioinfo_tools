@@ -28,14 +28,17 @@ TMP=/tmp/mo_genome_function
 
 rm -f ${TMP}*
 
-IFILE=$1
-if [ ! -f ${IFILE} ]; then
+if [ ! -f $1 ]; then
 	echo "no such file"
 	exit 1
 fi
 
-OFILE=`basename ${IFILE} | cut -d "." -f 1`"_genome_function.tsv"
-EFILE=`basename ${IFILE} | cut -d "." -f 1`"_genome_function.xls"
+# remove DOS return
+IFILE=${TMP}-file
+cat $1 | sed -e "s/\r$//g" > ${IFILE}
+
+OFILE=`basename $1 | cut -d "." -f 1`"_genome_function.tsv"
+EFILE=`basename $1 | cut -d "." -f 1`"_genome_function.xls"
 
 get_genomes ${IFILE}
 
