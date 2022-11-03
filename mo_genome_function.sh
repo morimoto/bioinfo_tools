@@ -24,6 +24,12 @@
 TOP=`readlink -f ./mo_analysis.sh | xargs dirname`
 . ${TOP}/lib
 
+LINE1=
+if [ x"$1" = x"-1" ]; then
+	LINE1=1
+	shift
+fi
+
 TMP=/tmp/mo_genome_function
 
 rm -f ${TMP}*
@@ -136,6 +142,8 @@ do
 
 		echo >> ${OFILE}
 		echo "</tr>" >> ${EFILE}
+
+		[ x${LINE1} = x1 ] && break
 	done
 done
 echo "</table>" >> ${EFILE}
