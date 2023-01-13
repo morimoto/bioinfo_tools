@@ -297,3 +297,20 @@
 	LAS_0xx-Bin_Bin_24_sub_1.faa  LAS_0xx-Bin_MAXBIN__017_sub_2.faa  ...
 	LAS_0xx-Bin_Bin_41_sub.faa    LAS_0xx-Bin_MAXBIN__018_2.faa      ...
 	...
+
+* mo_stream_dfast.sh
+
+	指定されたファイルを順番に dfast にかける
+	この時、ファイルのプレフィックスを --locus_tag_prefix に使用する
+	mo_add_prefix_to_file.sh を使用している事を想定
+
+	> ls
+	LAS_000-Bin_Bin_0.faa         LAS_000-Bin_MAXBIN__017_sub_1.faa  ...
+	LAS_0xx-Bin_Bin_24_sub_1.faa  LAS_0xx-Bin_MAXBIN__017_sub_2.faa  ...
+	LAS_0xx-Bin_Bin_41_sub.faa    LAS_0xx-Bin_MAXBIN__018_2.faa      ...
+
+	> mo_stream_dfast.sh ./*.faa
+
+	LAS_000-Bin_Bin_0.faa
+	^^^^^^^
+	これが使用される
