@@ -314,3 +314,15 @@
 	LAS_000-Bin_Bin_0.faa
 	^^^^^^^
 	これが使用される
+
+* mo_dfast_statistics_rna_table.sh
+
+	DFAST の出力 *.fa の「statistics.txt」「rna.fna」を表にする
+	*.fa のある場所で実行すると dfast_statistics_rna_table.xls に出力する
+
+		> cd DFAST_OUT
+		> ls
+		aaa.fa   bbb.fa   ccc.fa ...
+		> mo_dfast_statistics_rna_table.sh
+		> ls
+		dfast_statistics_rna_table.xls
