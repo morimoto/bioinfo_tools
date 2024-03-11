@@ -46,6 +46,7 @@ cat $1 | sed -e "s/\r$//g" > ${IFILE}
 OFILE=`basename $1 | cut -d "." -f 1`"_genome_function.tsv"
 EFILE=`basename $1 | cut -d "." -f 1`"_genome_function.xls"
 
+get_kegg
 get_genomes ${IFILE}
 
 VER=`tail -n 1 ${KEGG_FILE} | cut -d ":" -f 2`
