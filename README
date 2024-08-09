@@ -326,3 +326,49 @@
 		> mo_dfast_statistics_rna_table.sh
 		> ls
 		dfast_statistics_rna_table.xls
+
+* mo_sort_uniq_split_database
+* mo_add_taxid
+
+	以下のような巨大なデータベースを持っていて、
+
+		--- my_database_file ---
+		0308206A	8058
+		0308206A	8058
+		0308221A	9606
+		0308221A	9606
+		...
+
+	以下のようなデータに ID を付与したい場合
+	この split_my_datalist_xx は巨大なデータを split で分割したもの
+
+		--- split_my_datalist_xx ---
+		NLH79192.1
+		HQM32133.1
+		NLW84983.1
+		NLW84982.1
+		...
+
+	巨大なデータベースを頭文字毎に分割し(database_xx)、my_datalist への付与を
+	並列化したい場合に使う
+	ココでやっている事と同じこと
+	https://kazumaxneo.hatenablog.com/entry/2018/12/10/073000
+
+	まず、巨大なデータベースを database_xx に分割する
+
+		> mo_sort_uniq_split_database  my_database_file
+		> ls
+		database_xx   database_xx ...
+
+	単純に split_my_datalist_aa にデータを付与する場合
+
+		> mo_add_taxid split_my_datalist_aa
+		> ls
+		taxid_split_my_datalist_aa
+
+	大量にある split_my_datalist_xx を parallel を使って並列に
+	処理する
+
+		> parallel mo_add_taxid ::: split_my_datalist_*
+		> ls
+		taxid_split_my_datalist_xx   taxid_split_my_datalist_xx ...
