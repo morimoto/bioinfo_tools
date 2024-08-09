@@ -34,8 +34,8 @@ NUMHEAD=2
 FILE=$1
 
 # 既に taxid_xx がある場合は終了
-ls ./taxid_* > /dev/null 2>&1
-[ $? == 0 ] && echo "Already have taxid_xx" && exit
+ls ./taxid_${FILE} > /dev/null 2>&1
+[ $? == 0 ] && echo "Already have taxid_${FILE}" && exit
 
 cat ${FILE} | while read line; do
 	SUFIX=`echo ${line,,} | cut -c -${NUMHEAD}` # 小文字にして
