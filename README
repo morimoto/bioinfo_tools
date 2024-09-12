@@ -372,3 +372,36 @@
 		> parallel mo_add_taxid ::: split_my_datalist_*
 		> ls
 		taxid_split_my_datalist_xx   taxid_split_my_datalist_xx ...
+
+* mo_rename_fna_add_name.sh
+
+	指定された data_summary.tsv を元に
+	例えば以下のようにファイル名に名前を追加する
+
+		前 : GCA_013407385.1_ASM1340738v1_genomic.fna
+		後 : Nitrosarchaeum_sp.-AC2-GCA_013407385.1-ASM1340738v1.fna
+
+	稀に「Nitrosarchaeum sp.」となっているはずの箇所が「Nitrosarchaeum_sp. AC2」
+	と言うものがある。　この「AC2」は「strain: AC2」として再登場している
+	この場合の「AC2」は自動で削除される
+
+	指定できる ${dir} の位置関係
+	> ls ${dir}
+	GCA_xxx    GCA_xxx   GCA_xxx
+
+	> mo_rename_fna_add_name.sh  ${サマリファイル} ${dir} ${out}
+
+* mo_rename_fna_del_name.sh
+
+	mo_rename_fna_add_name でつけた名前から指定した部分でリネームする
+	上では以下のような命名になっている
+
+		1        2        3      4
+		${nameA}-${nameB}-${dir}-${asm}.${ext}
+
+	残す場所を指定する。　例えば ${nameA}, ${dir} を残す場合、
+
+		> mo_rename_fna_del_name ${IN} ${OUT} 1 3
+
+		前: ${nameA}-${nameB}-${dir}-${asm}.${ext}
+		後: ${nameA}-${dir}.${ext}
