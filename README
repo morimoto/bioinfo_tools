@@ -405,3 +405,19 @@
 
 		前: ${nameA}-${nameB}-${dir}-${asm}.${ext}
 		後: ${nameA}-${dir}.${ext}
+
+* mo_quality_report_sorting.py
+
+	指定したファイル群を指定したレポートで判定して、指定した場所へ移動する
+
+	> mo_quality_report_sorting.py A B C D X
+
+		A : report file		(ex. quality_report.tsv)
+		B : Completeness	(ex. 90.1)
+		C : Contamination	(ex. 5.0)
+		D : output dir		(ex. /tmp)
+		X : array of files	(ex. mydir/*.fna)
+
+	この場合、mydir/*.fna ファイルの内、quality_report.tsv で
+	Completeness が 90.1 以上、 Contamination が 5.0 以下と
+	判定されたファイルを /tmp へ移動する
