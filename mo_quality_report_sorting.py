@@ -44,7 +44,7 @@ if (not os.path.isdir(dir)):
 
 for file in sys.argv:
     # file : hoge/xxxx.fna
-    out = exec("grep {} {}".format(os.path.basename(file).split(".")[0], report))
+    out = exec("grep {} {}".format(os.path.splitext(os.path.basename(file))[0], report))
     if (not len(out)):
         continue
 
