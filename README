@@ -328,50 +328,99 @@
 		dfast_statistics_rna_table.xls
 
 * mo_sort_uniq_split_database
+* mo_uniq_split_database1
+* mo_uniq_split_database2
 * mo_add_taxid
 
 	以下のような巨大なデータベースを持っていて、
 
-		--- my_database_file ---
+		--- my_database ---
 		0308206A	8058
 		0308206A	8058
 		0308221A	9606
 		0308221A	9606
 		...
 
-	以下のようなデータに ID を付与したい場合
-	この split_my_datalist_xx は巨大なデータを split で分割したもの
+	以下のようなデータを持っている場合、データベースを元にID を付与したい
 
-		--- split_my_datalist_xx ---
-		NLH79192.1
-		HQM32133.1
-		NLW84983.1
-		NLW84982.1
-		...
+		--- my_data ---		=>	--- taxid_my_data ---
+		NLH79192.1			NLH79192.1	xxxx
+		HQM32133.1			HQM32133.1	xxxx
+		NLW84983.1			NLW84983.1	xxxx
+		NLW84982.1			NLW84982.1	xxxx
+		...				...
 
-	巨大なデータベースを頭文字毎に分割し(database_xx)、my_datalist への付与を
-	並列化したい場合に使う
+	ただし、my_data も巨大なので、split で分割し並列化したい
+	(split_my_datalist_xx)
+
+	まず、巨大なデータベース (my_database) を頭文字毎に分割する(database_xx)
+	そうしないと検索に非常に時間がかかってしまうため
+	分割はデータの頭文字で行う　各スクリプト内の NUMHEAD の数を合わせておく事
+
+	次に split_my_datalist_xx 毎に datalist_xx を元に ID を付与する
+	これを並列化する
+
 	ココでやっている事と同じこと
 	https://kazumaxneo.hatenablog.com/entry/2018/12/10/073000
 
-	まず、巨大なデータベースを database_xx に分割する
+	[巨大なデータベースを database_xx に分割する]
 
-		> mo_sort_uniq_split_database  my_database_file
+	方法１：
+
+		> mo_sort_uniq_split_database.sh  my_database
 		> ls
 		database_xx   database_xx ...
 
-	単純に split_my_datalist_aa にデータを付与する場合
+		ただし、my_database が大き過ぎると時間がかかる
 
-		> mo_add_taxid split_my_datalist_aa
+	方法２：
+		２回に分ける
+
+			> mo_uniq_split_database1.sh  my_database
+
+		実行すると mo_uniq_split_database1_list が作成される
+		中身は my_database の頭文字の一覧
+
+		続いて、それを元に database_xx を作成する
+
+			> mo_uniq_split_database2.sh  mo_uniq_split_database1_list  my_database
+			> ls
+			database_xx   database_xx ...
+
+		手間はかかるが、mo_uniq_split_database1_list を操作する事で、
+		必要なものだけ database_xx を作れる
+
+		さらに並列化ができる
+
+		まず、mo_uniq_split_database1_list を split で分割する
+
+			> split mo_uniq_split_database1_list
+			ls
+			split_mo_uniq_split_database1_list_xx
+
+		それを parallel で並列化する
+		12 コアを使う場合
+
+			> parallel --jobs 12 mo_uniq_split_database2.sh  my_sorted_database_file ::: mo_uniq_split_database1_list_*
+
+	[ID を付与する]
+
+	単純に my_data にデータを付与する場合
+
+		> mo_add_taxid my_data
 		> ls
-		taxid_split_my_datalist_aa
+		taxid_my_data
 
-	大量にある split_my_datalist_xx を parallel を使って並列に
-	処理する
+	my_data が巨大な場合、分割して並列に処理したい
+	split コマンドで分割した事を想定
+	この場合、my_data は split_my_data_xx に分割される
 
-		> parallel mo_add_taxid ::: split_my_datalist_*
+	大量にある split_my_data_xx を parallel を使って並列に処理する
+	コアの数を指定できる　例えば 12 コアを使う場合
+
+		> parallel --jobs 12 mo_add_taxid ::: split_my_data_*
 		> ls
-		taxid_split_my_datalist_xx   taxid_split_my_datalist_xx ...
+		taxid_split_my_data_xx   taxid_split_my_data_xx ...
 
 * mo_rename_fna_add_name.sh
 
