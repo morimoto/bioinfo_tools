@@ -375,33 +375,47 @@
 
 	方法２：
 		２回に分ける
+		(1) 頭文字一覧を作る
+		(2) 一覧を元に my_database を分割する
 
 			> mo_uniq_split_database1.sh  my_database
 
-		実行すると mo_uniq_split_database1_list が作成される
+		実行すると mo_uniq_split_database1_list が作成される (1)
 		中身は my_database の頭文字の一覧
 
-		続いて、それを元に database_xx を作成する
+			-- mo_uniq_split_database1_list --
+			a1
+			a2
+			aa
+			b1
+			...
 
-			> mo_uniq_split_database2.sh  mo_uniq_split_database1_list  my_database
+		続いて、それを元に database_xx を作成する (2)
+
+			> mo_uniq_split_database2.sh  my_database   mo_uniq_split_database1_list
 			> ls
 			database_xx   database_xx ...
 
 		手間はかかるが、mo_uniq_split_database1_list を操作する事で、
 		必要なものだけ database_xx を作れる
+		例えば「途中まで処理が終わっているのを続きからやりたい」など場合、
+		mo_uniq_split_database1_list を編集すればいい
 
-		さらに並列化ができる
+
+		my_database が巨大な場合、単一スレッドでの処理では一日では終わらない
+		そのため、処理を並列化して my_database を分割する。
 
 		まず、mo_uniq_split_database1_list を split で分割する
 
-			> split mo_uniq_split_database1_list
-			ls
-			split_mo_uniq_split_database1_list_xx
+			> split -n l/60   ${file}  ${prefix}
+			> split -n l/60  mo_uniq_split_database1_list    mo_uniq_split_database1_list_
+
+		上記の例では ${file} を 60 行ごとに分割して、${prefix}aa と言う感じで分割する
 
 		それを parallel で並列化する
 		12 コアを使う場合
 
-			> parallel --jobs 12 mo_uniq_split_database2.sh  my_sorted_database_file ::: mo_uniq_split_database1_list_*
+			> parallel --jobs 12 mo_uniq_split_database2.sh  my_database ::: mo_uniq_split_database1_list_*
 
 	[ID を付与する]
 
