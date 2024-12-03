@@ -21,7 +21,7 @@
 #
 # 2022/10/31 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 #===============================
-TOP=`readlink -f ./mo_analysis.sh | xargs dirname`
+TOP=`readlink -f "$0" | xargs dirname`
 . ${TOP}/lib
 
 LINE1=
