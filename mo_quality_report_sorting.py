@@ -53,9 +53,6 @@ for file in sys.argv:
     # array[2] : Contamination
     array = out.split()
 
-    if ("{}.fna".format(array[0]) != os.path.basename(file)):
-        continue
-
     comp = float(array[1])
     cont = float(array[2])
 
