@@ -466,8 +466,10 @@
 
 		> mo_rename_fna_del_name ${IN} ${OUT} 1 3
 
-		前: ${nameA}-${nameB}-${dir}-${asm}.${ext}
-		後: ${nameA}-${dir}.${ext}
+		             1        2        3      4
+		前: ${IN }/${nameA}-${nameB}-${dir}-${asm}.${ext}
+		後: ${OUT}/${nameA}-${dir}.${ext}
+		             1        3
 
 * mo_quality_report_sorting.py
 

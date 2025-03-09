@@ -13,6 +13,11 @@
 #
 #		> mo_rename_fna_del_name ${IN} ${OUT} 1 3
 #
+#		             1        2        3      4
+#		前: ${IN }/${nameA}-${nameB}-${dir}-${asm}.${ext}
+#		後: ${OUT}/${nameA}-${dir}.${ext}
+#		             1        3
+#
 # 2024/09/12 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 #===============================
 IN=$1
