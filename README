@@ -486,3 +486,31 @@
 	この場合、mydir/*.fna ファイルの内、quality_report.tsv で
 	Completeness が 90.1 以上、 Contamination が 5.0 以下と
 	判定されたファイルを /tmp へ移動する
+
+* mo_add_group.sh
+
+	以下のような「グループファイル」と「リストファイル」を用意
+	* 「リストファイル」はタブ区切りの tsv ファイル
+
+	group: グループファイル
+		----------------------
+		Group	Function
+		Carbon metabolism	glycolysis
+		Carbon metabolism	gluconeogenesis
+		Carbon metabolism	TCA Cycle
+		Oxidative phosphorylation (Nuo, ATPases)	NAD(P)H-quinone oxidoreductase
+		Oxidative phosphorylation (Nuo, ATPases)	NADH-quinone oxidoreductase
+		Oxidative phosphorylation (Nuo, ATPases)	Na-NADH-ubiquinone oxidoreductase
+		...
+	list.tsv: ターゲットファイル
+		デリミタはタブ
+		----------------------
+		Function	glycolysis	gluconeogenesis	TCA Cycle...
+		LAS006	 0.78	 0.78	 0.62	 0	 0.0	 0.33...
+		LAS007	 0.67	 0.78	 0.75	 0	 0.98	 0.17...
+
+	result-list.tsv と言うファイルに、グループを追加する
+
+	> mo_add_group.sh   group   list.tsv
+	> ls
+	... result-list.tsv ...
