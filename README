@@ -514,3 +514,52 @@
 	> mo_add_group.sh   group   list.tsv
 	> ls
 	... result-list.tsv ...
+
+* mo_prodigal.sh
+
+	以下のような .fa ファイルがある
+
+		$ ls
+		bin.1.orig.fa
+
+		$ head bin.1.orig.fa
+		>k141_2235_length_22738_cov_269.1510
+		AAAAGTTAAAGTTCATGTTAATATTGATACCGGAATGCGCAGATTGGGTGTTGATTATCA
+		GGAAGCATTTGAATTTATCAAGAGACTATCAAAAGTAAAACAAATTATTATTGATGGCAT
+		TTACACACACTTTGCAACATCGGATGAAGCAGGAAGTAAATTCACAAAACTGCAGATAAA
+		...
+
+	mo_prodigal.sh は以下をする
+
+	1. 「PRODIGAL_OUT/bin.1.orig」 と言うフォルダを作り、その中に prodigal の結果を残す
+
+		> mo_prodigal.sh bin.1.orig.fa
+
+		PRODIGAL_OUT/bin.1.orig/bin.1.orig.fa
+		PRODIGAL_OUT/bin.1.orig/bin.1.orig.gff
+		PRODIGAL_OUT/bin.1.orig/bin.1.orig.faa
+		PRODIGAL_OUT/bin.1.orig/bin.1.orig_fnn.fa
+
+	2. 「bin.1.orig」の中には元になった .fa ファイルもあるが、MAG 名が
+	　 追加されている
+
+		$ head bin.1.orig.fa
+		>k141_2235_length_22738_cov_269.1510
+
+		$ head PRODIGAL_OUT/bin.1.orig/bin.1.orig.fa
+		>bin.1.orig_k141_2235_length_22738_cov_269.1510
+		 ^^^^^^^^^^^
+
+	実行される prodigal コマンドに追加オプションを与えたい場合はコマンドの
+	最後に追加できる　例えば「prodigal ... -p meta」と言う実行をしたい場合
+
+		> mo_prodigal ./bin/1.orig.fa -p meta
+		                              ^^^^^^^
+
+	並列化したい場合
+
+		ex) オプション無し
+		> parallel mo_prodigal.sh {} ::: ./*.fa
+
+		ex) オプションあり
+		> parallel mo_prodigal.sh {} -p meta ::: ./*.fa
