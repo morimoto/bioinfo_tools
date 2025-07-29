@@ -43,7 +43,6 @@ fi
 IFILE=${TMP}-file
 cat $1 | sed -e "s/\r$//g" > ${IFILE}
 
-OFILE=`basename $1 | cut -d "." -f 1`"_genome_function.tsv"
 EFILE=`basename $1 | cut -d "." -f 1`"_genome_function.xls"
 
 get_kegg
@@ -55,24 +54,18 @@ echo    "<table border=\"1\">" > ${EFILE}
 echo    "<tr><td>KEGG_db_version:${VER}</td></tr>" >> ${EFILE}
 echo -n "<tr><td>Name A</td><td>Name B</td><td>Name C</td><td>Symbol</td><td>Name</td><td>EC</td><td>K num</td>" >> ${EFILE}
 
-echo    "KEGG_db_version:${VER}"				>  ${OFILE}
-echo -n "Name A	Name B	Name C	Symbol	Name	EC	K num"	>> ${OFILE}
 for gl in ${GENOME_LIST}
 do
-	echo -n "	${gl}" >> ${OFILE}
 	echo -n "<td>${gl}</td>" >> ${EFILE}
 	grep ${gl} ${IFILE}	> ${TMP}-${gl}
 done
 
-echo -n "	Sum	Core" >> ${OFILE}
 echo -n "<td>Sum</td><td>Core</td>" >> ${EFILE}
 
 for gl in ${GENOME_LIST}
 do
-	echo -n "	${gl} Singleton" >> ${OFILE}
 	echo -n "<td>${gl} Singleton</td>" >> ${EFILE}
 done
-echo >> ${OFILE}
 echo "</tr>" >> ${EFILE}
 
 d=0
@@ -92,7 +85,6 @@ do
 		EC=""
 		echo "${nlist}" | grep "\[EC:.*\]$" > /dev/null
 		[ $? = 0 ] && EC=`echo -n "${nlist}" | sed -r "s/.*\[EC:(.*)]/\1/g"`
-		echo -n "${nlist}	${EC}	${knum}"	>> ${OFILE}
 
 		N=`echo "${nlist}" | sed -e "s|	|</td><td>|g"`
 		E=
@@ -108,17 +100,14 @@ do
 		do
 			grep -w ${knum} ${TMP}-${gl} > /dev/null
 			if [ $? = 0 ]; then
-				echo -n "	+"	>> ${OFILE}
 				echo -n "<td>+</td>"	>> ${EFILE}
 				SUM=`expr ${SUM} + 1`
 			else
-				echo -n "	-"	>> ${OFILE}
 				echo -n "<td>-</td>"	>> ${EFILE}
 			fi
 		done
 
 		# SUM
-		echo -n "	${SUM}" >> ${OFILE}
 		echo -n "<td>${SUM}</td>" >> ${EFILE}
 
 		# Core
@@ -126,7 +115,6 @@ do
 		if [ ${GENOME_NUM} = ${SUM} ]; then
 			O="1"
 		fi
-		echo -n "	${O}" >> ${OFILE}
 		echo -n "<td>${O}</td>" >> ${EFILE}
 
 		# Single
@@ -137,11 +125,9 @@ do
 				grep -w ${knum} ${TMP}-${gl} > /dev/null
 				[ $? = 0 ] && O="1"
 			fi
-			echo -n "	${O}" >> ${OFILE}
 			echo -n "<td>${O}</td>" >> ${EFILE}
 		done
 
-		echo >> ${OFILE}
 		echo "</tr>" >> ${EFILE}
 
 		[ x${LINE1} = x1 ] && break
