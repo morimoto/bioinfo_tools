@@ -193,14 +193,12 @@
 	指定されたファイルを元に K ナンバーのカテゴリや名前、
 	EC 経路を表記し、各ゲノムがその K ナンバーを持っているかどうかの一覧を作る
 
-	${FILE}_genome_function.tsv と言うファイルに出力する
+	${FILE}_genome_function.html と言うファイルに出力する
 	表計算ソフトで開ける
 
 		> mo_genome_function.sh ./user_ko.txt
-		user_ko_genome_function.tsv
+		user_ko_genome_function.html
 
-	${FILE}_genome_function.xls と言うファイルも出力するが
-	中身は実は HTML。開く時何か言われるけど無視して開ける。
 	EC や K ナンバーがリンクになっててクリックすると KEGG の Web ページが開ける
 
 	重複する K ナンバーがある場合、-1 オプションをつけると最初のものだけを表示する
@@ -210,6 +208,16 @@
 
 	重複する K ナンバーの最初の１つだけを表示
 		> mo_genome_function.sh -1 ./user_ko.txt
+
+	元となる ./user_ko.txt は「GhostKOALA」等の出力を想定
+	-e オプションを使う事で「eggNOG-mapper」の出力を同時に表示できる
+	「GhostKOALA」と「eggNOG-mapper」の出力結果が違う場合、色を変えて表記する
+
+	「GhostKOALA」のみ入力
+		> mo_genome_function.sh ./user_ko.txt
+
+	「GhostKOALA」と「eggNOG-mapper」を入力
+		> mo_genome_function.sh ./user_ko.txt -e EGGNOG_OUT_ALL_MAGs.emapper.annotations
 
 	[FIXME]
 

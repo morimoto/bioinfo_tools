@@ -20,9 +20,6 @@ get_genomes() {
 	GENOME_LIST=`cut -d "|" -f 2 $1 | awk '{print $1}' | sed -e 's/_[0-9]*$//g' | sort | uniq`
 	GENOME_NUM=`echo "${GENOME_LIST}" | wc -l`
 
-	KNUM_LIST=`grep -w -E "K([0-9]){5}" $1 | awk '{print $2}'`
+	KNUM_LIST=`grep -w -E "K([0-9]){5}" $1 | awk '{print $2}' | sed -e "s/,/\n/g" | sort | uniq`
 	KNUM_NUM=`echo "${KNUM_LIST}" | wc -l`
-
-	KNUM_UNIQ_LIST=`echo "${KNUM_LIST}" | sort | uniq`
-	KNUM_UNIQ_NUM=` echo "${KNUM_LIST}" | sort | uniq | wc -l`
 }
