@@ -16,10 +16,47 @@ get_kegg() {
 	wget 'https://www.genome.jp/kegg-bin/download_htext?htext=ko00001&format=htext&filedir=' -O ${KEGG_FILE}
 }
 
+LIBTMP=/tmp/mo_lib_$$
+genome_file_check() {
+	if [ ! -s ${1} ]; then
+		echo "un-expected file format"
+		rm -fr ${LIBTMP}
+		exit
+	fi
+}
+
 get_genomes() {
-	GENOME_LIST=`cut -d "|" -f 2 $1 | awk '{print $1}' | sed -e 's/_[0-9]*$//g' | sort | uniq`
+	mkdir ${LIBTMP}
+
+	#--- file --------
+	# MGA_2|NED1_00010
+	# MGA_3|NED1_00020	K06925
+	# MGA_4|NED1_00030	K00259
+	# ...
+
+	# NED1_00010
+	# NED1_00020	K06925
+	# NED1_00030	K00259
+	cat $1| awk -F'|' 'NF == 2 { print $2 }' > ${LIBTMP}/F2
+	genome_file_check ${LIBTMP}/F2
+
+	# NED1_00010
+	# NED1_00020
+	# NED1_00030
+	cat ${LIBTMP}/F2 | awk '{print $1}' > ${LIBTMP}/F3
+	genome_file_check ${LIBTMP}/F3
+
+	# NED1
+	# NED1
+	# NED1
+	cat ${LIBTMP}/F3 | sed -e 's/_[0-9]*$//g' > ${LIBTMP}/F4
+	genome_file_check ${LIBTMP}/F4
+
+	GENOME_LIST=`cat ${LIBTMP}/F4 | sort | uniq`
 	GENOME_NUM=`echo "${GENOME_LIST}" | wc -l`
 
 	KNUM_LIST=`grep -w -E "K([0-9]){5}" $1 | awk '{print $2}' | sed -e "s/,/\n/g" | sort | uniq`
 	KNUM_NUM=`echo "${KNUM_LIST}" | wc -l`
+
+	rm -fr ${LIBTMP}
 }
