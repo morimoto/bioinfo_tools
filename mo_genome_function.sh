@@ -38,17 +38,22 @@ if [ x"$1" = x"-1" ]; then
 fi
 
 TMP=/tmp/mo_genome_function
-
 rm -f ${TMP}*
+mkdir ${TMP}
+cleanup() {
+	rm -fr ${TMP}
+}
+trap cleanup EXIT
+
 
 if [ ! -f $1 ]; then
 	echo "no such file"
 	exit 1
 fi
 
-GFILE=${TMP}-file-g	# for GhostKOALA
-EFILE=${TMP}-file-e	# for eggNOG-mapper
-XFILE=${TMP}-file-x	# for both "GhostKOALA" and "eggNOG-mapper"
+GFILE=${TMP}/file-g	# for GhostKOALA
+EFILE=${TMP}/file-e	# for eggNOG-mapper
+XFILE=${TMP}/file-x	# for both "GhostKOALA" and "eggNOG-mapper"
 
 # remove DOS return
 cat $1 | sed -e "s/\r$//g" > ${GFILE}
@@ -97,8 +102,8 @@ for gl in ${GENOME_LIST}
 do
 	td "${gl}"	"colspan=\"${SPAN}\""	>> ${OUT}
 
-			   grep ${gl} ${GFILE} > ${TMP}-${gl}-g
-	[ ${SPAN} = 2 ] && grep ${gl} ${EFILE} > ${TMP}-${gl}-e
+			   grep ${gl} ${GFILE} > ${TMP}/${gl}-g
+	[ ${SPAN} = 2 ] && grep ${gl} ${EFILE} > ${TMP}/${gl}-e
 done
 
 td "Sum"	"colspan=\"${SPAN}\""	>> ${OUT}
@@ -170,7 +175,7 @@ do
 			TXTe="-"
 
 			# for GhostKOALA
-			grep -w ${knum} ${TMP}-${gl}-g > /dev/null
+			grep -w ${knum} ${TMP}/${gl}-g > /dev/null
 			if [ $? = 0 ]; then
 				TXTg="+"
 				SUMg=`expr ${SUMg} + 1`
@@ -178,7 +183,7 @@ do
 
 			# for eggNOG-mapper
 			if [ ${SPAN} = 2 ]; then
-				grep -w ${knum} ${TMP}-${gl}-e > /dev/null
+				grep -w ${knum} ${TMP}/${gl}-e > /dev/null
 				if [ $? = 0 ]; then
 					TXTe="+"
 					SUMe=`expr ${SUMe} + 1`
@@ -218,12 +223,12 @@ do
 			Og=" "
 			Oe=" "
 			if [ ${SUMg} = 1 ]; then
-				grep -w ${knum} ${TMP}-${gl}-g > /dev/null
+				grep -w ${knum} ${TMP}/${gl}-g > /dev/null
 				[ $? = 0 ] && Og="1"
 			fi
 
 			if [ ${SPAN} = 2 -a ${SUMe} = 1 ]; then
-				grep -w ${knum} ${TMP}-${gl}-e > /dev/null
+				grep -w ${knum} ${TMP}/${gl}-e > /dev/null
 				[ $? = 0 ] && Oe="1"
 			fi
 
@@ -244,4 +249,4 @@ done
 echo "</table>" >> ${OUT}
 echo
 
-rm -fr ${TMP}*
+cleanup
