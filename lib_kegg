@@ -1,0 +1,77 @@
+#! /bin/bash
+#===============================
+#
+# lib_kegg
+#
+# 2026/01/30 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+#===============================
+
+__KEGG=kegg
+__KEGG_FILE=/tmp/kegg-`date -I`
+
+#
+# 各スクリプトは __KEGG_FILE を直接使うのではなく、各自のワーキングディレクトリに
+# コピーして使うこと
+# いつの kegg ファイルかはファイル名ではなく、kegg_version で判断
+#
+kegg_file_download() {
+
+	[ -f ${__KEGG_FILE} ] && return
+
+	rm -f /tmp/${__KEGG}-*
+	wget 'https://www.genome.jp/kegg-bin/download_htext?htext=ko00001&format=htext&filedir=' -O ${__KEGG_FILE}
+}
+
+# VER=`kegg_version ${KEGG_FILE}`
+kegg_version() {
+	__file=$1
+
+	tail -n 1 ${__file} | cut -d ":" -f 2
+}
+
+# 1 つの KNUM は複数の名前を持つ場合がある
+# __out に以下のようにファイルを出力する
+#
+#	__out/${__knum}/1/name_a
+#	__out/${__knum}/1/name_b
+#	__out/${__knum}/1/name_c
+#	__out/${__knum}/1/synbol
+#	__out/${__knum}/1/kname
+#
+#	# 複数ある場合
+#	__out/${__knum}/2/name_a
+#	__out/${__knum}/2/name_b
+#	...
+#
+kegg_knum_name() {
+	__out=$1
+	__knum=$2
+	__kegg_file=$3
+	__single_name=$4
+	__tmp1=/tmp/kegg_knum_info$$
+	__tmp2=/tmp/kegg_knum_line$$
+
+	[ ! -f ${__kegg_file} ] && echo "No kegg file" && exit
+
+	__lines=`grep -n -w ${__knum} ${__kegg_file} | cut -d ":" -f 1`
+	__num=1
+	for __l in ${__lines}
+	do
+		mkdir -p ${__out}/${__knum}/${__num}
+
+		head -n ${__l} ${__kegg_file}						> ${__tmp1}
+
+		grep "^A" ${__tmp1} | sed -e "s/^A//g" | tail -n 1			> ${__out}/${__knum}/${__num}/name_a
+		grep "^B" ${__tmp1} | grep "^B  " | sed -e "s/^B\s*//g" | tail -n 1	> ${__out}/${__knum}/${__num}/name_b
+		grep "^C" ${__tmp1} | grep "^C  " | sed -e "s/^C\s*//g" | tail -n 1	> ${__out}/${__knum}/${__num}/name_c
+
+		tail -n 1 ${__tmp1} | sed -e "s/^D\s*K[0-9]*\s*//"			> ${__tmp2}
+
+		cat ${__tmp2} | cut -d ";" -f 1						> ${__out}/${__knum}/${__num}/synbol
+		cat ${__tmp2} | cut -d ";" -f 2 | sed -e "s/^\s*//g"			> ${__out}/${__knum}/${__num}/kname
+
+		[ x${__single_name} = x1 ] && break
+		__num=`expr ${__num} + 1`
+	done
+	rm -f ${__tmp1} ${__tmp2}
+}

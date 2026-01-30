@@ -1,0 +1,19 @@
+#! /bin/bash
+#===============================
+#
+# get_knum_list_g
+#
+# 2026/02/05 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+#===============================
+INPUT_G=$1
+TGT_FILES=$2
+OUT=$3
+
+for file in `cat ${TGT_FILES}`
+do
+	# KNUM を取り出す
+	grep "^${file}" ${INPUT_G} | cut -f 2- -s | sed -s "s/	/\n/g" | sort | uniq > ${OUT}/${file}
+
+	# 空ファイルの場合は削除
+	[ ! -s ${OUT}/${file} ] && rm -f ${OUT}/${file}
+done

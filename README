@@ -226,6 +226,36 @@
 	このスクリプトはそれを考慮できない
 	時間が経てば解決する問題かも？
 
+* mo_genome_function2.sh
+
+	prodigal 形式のファイルを GhostKOALA で処理したファイルを処理する
+	eggNOG-mapper は今の所未対応
+
+	File style
+	----------
+	...
+	BROCADIACEAE_MAG_k141_115629_length_156222_cov_10966.9200_7
+	BROCADIACEAE_MAG_k141_115629_length_156222_cov_10966.9200_8	K00075
+	BROCADIACEAE_MAG_k141_115629_length_156222_cov_10966.9200_9	K17828
+	BROCADIACEAE_MAG_k141_115629_length_156222_cov_10966.9200_10
+	...
+	----------
+
+	結果を out.html と言う形式で出力する
+	mo_genome_function.sh の結果とほぼ同じだけど、出力順等はが少し違う
+
+		mo_genome_function2.sh [-1genl]
+
+		-1:	KNUM 名が複数ある場合、最初の１つだけを表示する
+		-g:	GhostKOALA ファイルを指定する
+		-e:	eggNOG-mapper ファイルを指定する
+		-n:	並列処理する CPU の数（デフォルト 8）
+		-l:	対象としたゲノムファイル
+
+	例)
+		> mo_genome_function2.sh -1 -n 16 -g kofamkoala_out_emapper_203_Brocadiaceae_genomes_20260102.txt -l genome_list.sh
+
+
 * mo_ec_to_kno.sh
 
 	EC 番号を入れると、必要な K ナンバーの一覧を返す

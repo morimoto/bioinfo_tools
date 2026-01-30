@@ -1,0 +1,74 @@
+#! /bin/bash
+#===============================
+#
+# lib
+#
+# 2026/01/30 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+#===============================
+PWD=`pwd`
+HTML=${PWD}/out.html
+TMP=${PWD}/tmp
+TMP_G=${TMP}/gkoara	# for GhostKOALA
+TMP_E=${TMP}/egg	# for eggNOG-mapper
+
+CONFIG=${TMP}/config
+
+KEGG_DIR=${TMP}/kegg
+KEGG_KNUM_DIR=${KEGG_DIR}/knum
+KEGG_KNUM_LIST_DIR=${TMP}/knum_list
+KEGG_KNUM_LIST_ALL=${KEGG_KNUM_LIST_DIR}/all
+KEGG_KNUM_LISTS=${KEGG_KNUM_LIST_DIR}/list_
+KEGG_FILE=${KEGG_DIR}/kegg_data
+
+GENOME_LIST=${TMP}/genome_list
+
+[ -f ${CONFIG} ] && . ${CONFIG}
+[ x${ERROR} != x ] && exit
+
+step() {
+	echo "=================="
+	echo "      Step $1"
+	echo "=================="
+}
+
+phase() {
+	echo "[ $1 ]"
+}
+
+error() {
+	echo "=================="
+	echo "      error"
+	echo
+	echo $@
+	echo "=================="
+	echo "ERROR=1" >> ${CONFIG}
+	exit
+}
+
+td() {
+	__txt=$1
+	__out=$2
+	__opt=$3
+
+	echo -n "<td ${__opt}>${__txt}</td>"	>> ${__out}
+}
+
+tr_s() {
+	__out=$1
+	echo -n "<tr>"	>> ${__out}
+}
+
+tr_e() {
+	__out=$1
+	echo "</tr>"	>> ${__out}
+}
+
+table_s() {
+	__out=$1
+	echo "<table border=\"1\">" > ${__out}
+}
+
+table_e() {
+	__out=$1
+	echo "</table>"	>> ${__out}
+}

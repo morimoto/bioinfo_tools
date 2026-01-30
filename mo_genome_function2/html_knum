@@ -1,0 +1,99 @@
+#! /bin/bash
+#===============================
+#
+# html_knum
+#
+# 2026/02/10 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+#===============================
+TOP=`readlink -f "$0" | xargs dirname | xargs dirname`
+. ${TOP}/mo_genome_function2/lib
+
+knum_list=$1
+genome_list_total=`cat ${GENOME_LIST} | wc -l`
+span=0
+[ x"${INPUT_G}" != x ] && span=`expr ${span} + 1`
+[ x"${INPUT_E}" != x ] && span=`expr ${span} + 1`
+
+tr_knum() {
+	[ x${ERROR} != x ] && exit
+
+	knum=$1
+
+	[ ! -e ${KEGG_KNUM_DIR}/${knum} ] && error "No KNUM=${knum}"
+
+	cd ${KEGG_KNUM_DIR}/${knum}
+
+	for num in `ls ./`
+	do
+		: > ${num}/tr
+
+		tr_s	${num}/tr
+
+		# K num
+		td "<a href=\"https://www.genome.jp/dbget-bin/www_bget?ko:${knum}\">${knum}</a>"	${num}/tr
+
+		# "Name A"
+		d=`cat ${num}/name_a`
+		td "${d}" 		${num}/tr
+		# "Name B"
+		d=`cat ${num}/name_b`
+		td "${d}" 		${num}/tr
+		# "Name C"
+		d=`cat ${num}/name_c`
+		td "${d}" 		${num}/tr
+		# "Symbol"
+		d=`cat ${num}/synbol`
+		td "${d}" 		${num}/tr
+		# "Name"
+		d=`cat ${num}/kname`
+		td "${d}" 		${num}/tr
+
+		# EC
+		ec=
+		grep "\[EC:.*\]$" ${num}/kname > /dev/null
+		if [ $? = 0 ]; then
+			ec_list=`cat ${num}/kname | sed -r "s/.*\[EC:(.*)]/\1/g"`
+			for e in ${ec_list}
+			do
+				ec="${ec}<a href=\"https://www.genome.jp/entry/${e}\">${e}</a><br>"
+			done
+		fi
+		td "${ec}"			${num}/tr
+
+		# calculate SUM first
+		[ x"${INPUT_G}" != x ] && sum_g=`grep ${knum} ${TMP_G}/* | wc -l`
+		[ x"${INPUT_E}" != x ] && sum_e=`grep ${knum} ${TMP_E}/* | wc -l`
+
+		# Genome List
+		for gnome in `cat ${GENOME_LIST}`
+		do
+			if [ x"${INPUT_G}" != x ]; then
+				s=`grep ${knum} ${TMP_G}/${gnome} | wc -l`
+				bgcolor=
+				[[ ${sum_g} == ${genome_list_total} ]] && bgcolor="bgcolor=\"lime\""
+				[[ ${sum_g} == 1 && ${s} == 1       ]] && bgcolor="bgcolor=\"yellow\""
+
+				td ${s}	${num}/tr ${bgcolor}
+			fi
+			if [ x"${INPUT_E}" != x ]; then
+				s=`grep ${knum} ${TMP_E}/${gnome} | wc -l`
+				bgcolor=
+				[[ ${sum_e} == ${genome_list_total} ]] && bgcolor="bgcolor=\"lime\""
+				[[ ${sum_e} == 1 && ${s} == 1       ]] && bgcolor="bgcolor=\"yellow\""
+
+				td ${s}	${num}/tr ${bgcolor}
+			fi
+		done
+
+		# SUM
+		[ x"${INPUT_G}" != x ] && td ${sum_g} ${num}/tr
+		[ x"${INPUT_E}" != x ] && td ${sum_e} ${num}/tr
+
+		tr_e	${num}/tr
+	done
+}
+
+for knum in `cat ${knum_list}`
+do
+	tr_knum ${knum}
+done
