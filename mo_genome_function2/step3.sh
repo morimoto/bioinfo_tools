@@ -19,3 +19,14 @@ step "3"
 #--------------------
 phase "parse eggNOG-mapper"
 #--------------------
+mkdir -p ${TMP_E}
+
+# 並列処理
+lists=`ls ${FAA_DIR}/list_*`
+for list in ${lists}
+do
+	echo " - Handle "`realpath --relative-to=. ${list}`
+	${TOP}/mo_genome_function2/get_knum_list_e ${INPUT_E} ${list} ${TMP_E} &
+done
+echo "Wait parallel operation"
+wait

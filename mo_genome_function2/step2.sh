@@ -18,34 +18,12 @@ step "2"
 [ x"${INPUT_G}" = x ] && exit
 
 #--------------------
-phase "create working dir"
-#--------------------
-step2_tmp=${TMP}/step2_work
-rm   -fr ${step2_tmp}
-mkdir -p ${step2_tmp}
-
-#--------------------
-phase "prepare separate faa list"
-#--------------------
-# 行数
-line_num=`cat ${INPUT_GENOME_LIST} | wc -l`
-# 分割数
-num=`expr ${line_num} / ${CPU_NUM}`
-[ x${num} = x0 ] && num=1
-
-# ${INPUT_GENOME_LIST} を ${CPU_NUM} に分割
-faa_dir=${step2_tmp}/faa_list
-mkdir -p ${faa_dir}
-grep ".faa$" ${INPUT_GENOME_LIST} | sed -e "s/.faa$//g" > ${faa_dir}/all_list
-split -l ${num} -d ${faa_dir}/all_list ${faa_dir}/list_
-
-#--------------------
-phase "Parse KNUM from GhostKOALA"
+phase "Parse GhostKOALA"
 #--------------------
 mkdir -p ${TMP_G}
 
 # 並列処理
-lists=`ls ${faa_dir}/list_*`
+lists=`ls ${FAA_DIR}/list_*`
 for list in ${lists}
 do
 	echo " - Handle "`realpath --relative-to=. ${list}`
@@ -53,5 +31,3 @@ do
 done
 echo "Wait parallel operation"
 wait
-
-rm -fr ${step2_tmp}

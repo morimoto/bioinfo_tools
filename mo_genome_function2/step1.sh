@@ -91,8 +91,23 @@ if [ x"${INPUT_E}" != x ]; then
 	#--------------------
 	phase " * eggNOG-mapper / prodigal"
 	#--------------------
-	error "nos supported yet"
+	head -n 20 ${INPUT_E} | grep -v "^#" | egrep -v ".*_.*\.[0-9]+_[0-9]" > /dev/null
+	[ $? = 0 ] && error "non prodigal format on eggNOG-mapper"
 fi
+
+#--------------------
+phase "prepare separate faa list"
+#--------------------
+# 行数
+line_num=`cat ${INPUT_GENOME_LIST} | wc -l`
+# 分割数
+num=`expr ${line_num} / ${CPU_NUM}`
+[ x${num} = x0 ] && num=1
+
+# ${INPUT_GENOME_LIST} を ${CPU_NUM} に分割
+mkdir -p ${FAA_DIR}
+grep ".faa$" ${INPUT_GENOME_LIST} | sed -e "s/.faa$//g" > ${FAA_DIR}/all_list
+split -l ${num} -d ${FAA_DIR}/all_list ${FAA_DIR}/list_
 
 #--------------------
 phase "save config"

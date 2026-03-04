@@ -11,6 +11,8 @@ TMP=${PWD}/tmp
 TMP_G=${TMP}/gkoara	# for GhostKOALA
 TMP_E=${TMP}/egg	# for eggNOG-mapper
 
+FAA_DIR=${TMP}/faa_list
+
 CONFIG=${TMP}/config
 
 KEGG_DIR=${TMP}/kegg

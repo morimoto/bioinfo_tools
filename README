@@ -229,7 +229,6 @@
 * mo_genome_function2.sh
 
 	prodigal 形式のファイルを GhostKOALA で処理したファイルを処理する
-	eggNOG-mapper は今の所未対応
 
 	File style
 	----------
@@ -254,7 +253,9 @@
 
 	例)
 		> mo_genome_function2.sh -1 -n 16 -g kofamkoala_out_emapper_203_Brocadiaceae_genomes_20260102.txt -l genome_list.sh
-
+		> mo_genome_function2.sh -1 -g kofamkoala_out_emapper_203_Brocadiaceae_genomes_20260102.txt \
+					    -e EGGNOG_MAPPER_OUT_204_BROCADIACEAE_GENOMES_FROM_NCBI_20260228.emapper.annotations\
+					    -l genome_list.sh
 
 * mo_ec_to_kno.sh
 

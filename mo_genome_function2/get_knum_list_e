@@ -1,0 +1,19 @@
+#! /bin/bash
+#===============================
+#
+# get_knum_list_e
+#
+# 2026/02/05 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+#===============================
+INPUT_E=$1
+TGT_FILES=$2
+OUT=$3
+
+for file in `cat ${TGT_FILES}`
+do
+	# eggNOG
+	grep "^${file}" ${INPUT_E} | cut -f 12 | grep "ko:" | sed -e "s/ko://g" | sed -e "s/,/\n/g" | sort | uniq > ${OUT}/${file}
+
+	# 空ファイルの場合は削除
+	[ ! -s ${OUT}/${file} ] && rm -f ${OUT}/${file}
+done
