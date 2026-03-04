@@ -73,5 +73,17 @@ kegg_knum_name() {
 		[ x${__single_name} = x1 ] && break
 		__num=`expr ${__num} + 1`
 	done
+
+	# Sometimes knum not exist
+	if [ ! -e ${__out}/${__knum} ]; then
+		echo "No K number ($__knum)"
+		mkdir -p  ${__out}/${__knum}/1
+		:	> ${__out}/${__knum}/1/name_a
+		:	> ${__out}/${__knum}/1/name_b
+		:	> ${__out}/${__knum}/1/name_c
+		:	> ${__out}/${__knum}/1/synbol
+		:	> ${__out}/${__knum}/1/kname
+	fi
+
 	rm -f ${__tmp1} ${__tmp2}
 }
