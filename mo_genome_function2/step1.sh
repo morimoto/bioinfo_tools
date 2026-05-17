@@ -83,7 +83,7 @@ if [ x"${INPUT_G}" != x ]; then
 	#--------------------
 	phase " * GhostKOALA / prodigal"
 	#--------------------
-	cat ${INPUT_G} | egrep -v ".*_.*\.[0-9]+_[0-9]+( K.*$)?" > /dev/null
+	cat ${INPUT_G} | egrep -v ".*_.*(\.)?[0-9]+_[0-9]+( K.*$)?" > /dev/null
 	[ $? = 0 ] && error "non prodigal format on GhostKOALA"
 fi
 
